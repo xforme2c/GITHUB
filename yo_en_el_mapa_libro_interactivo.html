@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Yo en el Mapa! - Libro Interactivo para Estudiantes</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Comic / Classroom friendly & clean modern sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['"Fredoka"', 'cursive', 'sans-serif'],
+            quicksand: ['"Quicksand"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FDE047',
+              orange: '#FB923C',
+              coral: '#F87171',
+              sky: '#38BDF8',
+              blue: '#60A5FA',
+              indigo: '#818CF8',
+              purple: '#C084FC',
+              emerald: '#34D399',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 20% 20%, #eff6ff 0%, #f0fdf4 50%, #fdf4ff 100%);
+      min-height: 100vh;
+    }
+    .font-title {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    /* Tab layered effect */
+    .tab-slice {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-slice:hover {
+      transform: translateX(4px);
+    }
+    .tab-active {
+      transform: scale(1.02);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    /* Printable styling */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-page {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: 2px solid #333 !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+  <header class="no-print bg-white/90 backdrop-blur border-b border-indigo-100 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-indigo-500 flex items-center justify-center text-white shadow-md">
+          <i data-lucide="map-pin" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-title text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            ¡Yo en el Mapa!
+          </h1>
+          <p class="text-xs text-slate-500 hidden sm:block">Libro de capas geográficas interactivo en español</p>
+        </div>
+      </div>
+
+      <!-- Header actions -->
+      <div class="flex items-center space-x-2">
+        <button id="btn-read-aloud" class="flex items-center space-x-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white font-semibold text-sm px-3.5 py-2 rounded-xl transition shadow-sm" title="Escuchar la página actual">
+          <i data-lucide="volume-2" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Escuchar en Español</span>
+        </button>
+
+        <button id="btn-record" class="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-semibold text-sm px-3.5 py-2 rounded-xl transition shadow-sm" title="Grabar tu propia voz">
+          <i data-lucide="mic" class="w-4 h-4" id="mic-icon"></i>
+          <span id="record-label" class="hidden md:inline">Grabar mi voz</span>
+        </button>
+
+        <button id="btn-print" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold text-sm px-3.5 py-2 rounded-xl border border-slate-300 transition" title="Imprimir libro">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Imprimir</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 items-start">
+    
+    <!-- Left / Top: Interactive Tab Index (Matching the Layered Look in original PDF) -->
+    <aside class="no-print w-full lg:w-72 bg-white rounded-3xl p-4 shadow-xl shadow-indigo-100/50 border border-indigo-50 shrink-0">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <span class="font-title text-sm font-bold uppercase tracking-wider text-slate-400">Capas del Mapa</span>
+        <span class="text-xs bg-indigo-50 text-indigo-600 font-bold px-2 py-0.5 rounded-full" id="page-counter">1 de 7</span>
+      </div>
+
+      <nav class="flex flex-col space-y-2" id="layers-nav">
+        <!-- Generated by JS: 7 Tabs matching original hierarchy -->
+      </nav>
+
+      <!-- Quick helper box for teachers / students -->
+      <div class="mt-5 p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 text-xs text-amber-900 flex items-start space-x-2.5">
+        <i data-lucide="sparkles" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
+        <p>
+          <strong>Instrucciones:</strong> Escribe tu respuesta en cada página, añade una foto o dibujo, y presiona <strong>Escuchar</strong> o <strong>Grabar</strong> para practicar tu español.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Center/Right: The Active Page Sheet (Authentic to the PDF format) -->
+    <section class="flex-1 w-full bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl shadow-indigo-100/70 border-4 border-dashed relative min-h-[640px] flex flex-col justify-between" id="page-container">
+      
+      <!-- Audio player for user recordings if available -->
+      <div id="user-audio-banner" class="hidden no-print mb-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-2.5 flex items-center justify-between text-xs text-emerald-800 animate-fadeIn">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="audio-waveform" class="w-4 h-4 text-emerald-600"></i>
+          <span>¡Tienes una grabación de voz guardada para esta página!</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="btn-play-my-audio" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 flex items-center space-x-1">
+            <i data-lucide="play" class="w-3 h-3"></i>
+            <span>Reproducir</span>
+          </button>
+          <button id="btn-delete-audio" class="p-1 text-slate-400 hover:text-red-500 rounded" title="Eliminar grabación">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Page Content loaded here -->
+      <div id="page-content" class="flex-grow flex flex-col">
+        <!-- Inserted by renderCurrentPage() -->
+      </div>
+
+      <!-- Bottom mini layered tabs preview (replicating the bottom tabs strip in original PDF) -->
+      <div class="mt-8 pt-4 border-t-2 border-slate-100">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Índice de Capas:</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5 text-center font-title font-bold text-[11px]" id="bottom-strip-tabs">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Navigation Arrows for Bottom -->
+      <div class="no-print mt-6 flex items-center justify-between pt-2">
+        <button id="btn-prev" class="flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          <span>Anterior</span>
+        </button>
+
+        <!-- Progress dots -->
+        <div class="flex space-x-1.5" id="progress-dots">
+          <!-- Populated by JS -->
+        </div>
+
+        <button id="btn-next" class="flex items-center space-x-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-200 transition">
+          <span>Siguiente</span>
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <div id="print-booklet-container" class="hidden">
+    <!-- Populated when user clicks print, formats all 7 pages sequentially -->
+  </div>
+
+  <script>
+    // State management for the 7 pages of "¡Yo en el Mapa!"
+    const bookData = {
+      currentPage: 0,
+      pages: [
+        {
+          id: 'me',
+          titleTag: '¡ESTE SOY YO!',
+          spanishTitle: '¡Yo en el Mapa!',
+          englishRef: 'Me on the Map!',
+          prompt: 'Por:',
+          placeholder: 'Escribe tu nombre aquí...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta tu foto aquí',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+          color: 'from-amber-400 to-amber-500',
+          borderColor: 'border-amber-400',
+          badgeColor: 'bg-amber-100 text-amber-800',
+          spokenPhrase: '¡Yo en el mapa! Este soy yo. Hecho por: '
+        },
+        {
+          id: 'street',
+          titleTag: 'MI CALLE',
+          spanishTitle: 'La dirección de mi calle',
+          englishRef: 'My street address',
+          prompt: 'La dirección de mi calle es:',
+          placeholder: 'Ej: Calle Sol #123, Colonia Las Flores...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta la foto o dibujo de tu casa/calle',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80',
+          color: 'from-orange-400 to-orange-500',
+          borderColor: 'border-orange-400',
+          badgeColor: 'bg-orange-100 text-orange-800',
+          spokenPhrase: 'Mi calle. La dirección de mi calle es: '
+        },
+        {
+          id: 'city',
+          titleTag: 'MI CIUDAD',
+          spanishTitle: 'Vivo en la ciudad de...',
+          englishRef: 'I live in the city of...',
+          prompt: 'Vivo en la ciudad de:',
+          placeholder: 'Ej: Ciudad de México, Madrid, Bogotá, Miami...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta una foto o mapa de tu ciudad',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1477959858617-67f30bc54b86?auto=format&fit=crop&w=600&q=80',
+          color: 'from-rose-400 to-rose-500',
+          borderColor: 'border-rose-400',
+          badgeColor: 'bg-rose-100 text-rose-800',
+          spokenPhrase: 'Mi ciudad. Yo vivo en la ciudad de: '
+        },
+        {
+          id: 'state',
+          titleTag: 'MI ESTADO',
+          spanishTitle: 'Vivo en el estado de...',
+          englishRef: 'I live in the state of...',
+          prompt: 'Vivo en el estado / provincia / región de:',
+          placeholder: 'Ej: California, Jalisco, Buenos Aires, Antioquia...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta el mapa o escudo de tu estado/región',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80',
+          color: 'from-sky-400 to-sky-500',
+          borderColor: 'border-sky-400',
+          badgeColor: 'bg-sky-100 text-sky-800',
+          spokenPhrase: 'Mi estado. Yo vivo en el estado de: '
+        },
+        {
+          id: 'country',
+          titleTag: 'MI PAÍS',
+          spanishTitle: 'Vivo en el país de...',
+          englishRef: 'I live in the country of...',
+          prompt: 'Vivo en el país de:',
+          placeholder: 'Ej: Estados Unidos, México, España, Colombia, Perú...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta el mapa o bandera de tu país',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80',
+          color: 'from-blue-500 to-blue-600',
+          borderColor: 'border-blue-500',
+          badgeColor: 'bg-blue-100 text-blue-800',
+          spokenPhrase: 'Mi país. Yo vivo en el país de: '
+        },
+        {
+          id: 'continent',
+          titleTag: 'MI CONTINENTE',
+          spanishTitle: 'Vivo en el continente de...',
+          englishRef: 'I live on the continent of...',
+          prompt: 'Vivo en el continente de:',
+          placeholder: 'Ej: América del Norte, América del Sur, Europa...',
+          inputValue: '',
+          imagePlaceholder: 'Inserta el mapa de tu continente',
+          imageUrl: '',
+          defaultImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+          color: 'from-indigo-500 to-indigo-600',
+          borderColor: 'border-indigo-500',
+          badgeColor: 'bg-indigo-100 text-indigo-800',
+          spokenPhrase: 'Mi continente. Yo vivo en el continente de: '
+        },
+        {
+          id: 'planet',
+          titleTag: 'MI PLANETA',
+          spanishTitle: 'La Tierra (Mi Planeta)',
+          englishRef: 'Earth (My Planet)',
+          prompt: 'Mi planeta se llama:',
+          placeholder: 'La Tierra / Planeta Tierra',
+          inputValue: 'La Tierra',
+          imagePlaceholder: 'Foto de la Tierra desde el espacio',
+          imageUrl: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80',
+          defaultImage: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=800&q=80',
+          color: 'from-purple-500 to-purple-600',
+          borderColor: 'border-purple-500',
+          badgeColor: 'bg-purple-100 text-purple-800',
+          spokenPhrase: 'Mi planeta. Todos vivimos juntos en el planeta Tierra.'
+        }
+      ],
+      userAudioRecordings: {} // pageIndex -> Blob URL
+    };
+
+    // Load persisted state if saved in localStorage
+    try {
+      const saved = localStorage.getItem('yo_en_el_mapa_data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.forEach((item, idx) => {
+          if (bookData.pages[idx]) {
+            if (item.inputValue !== undefined) bookData.pages[idx].inputValue = item.inputValue;
+            if (item.imageUrl !== undefined) bookData.pages[idx].imageUrl = item.imageUrl;
+          }
+        });
+      }
+    } catch(e) {
+      console.warn("Could not load from localStorage", e);
+    }
+
+    function saveState() {
+      try {
+        const toSave = bookData.pages.map(p => ({
+          inputValue: p.inputValue,
+          imageUrl: p.imageUrl
+        }));
+        localStorage.setItem('yo_en_el_mapa_data', JSON.stringify(toSave));
+      } catch (e) {
+        console.warn("Could not save to localStorage", e);
+      }
+    }
+
+    function renderSidebar() {
+      const nav = document.getElementById('layers-nav');
+      nav.innerHTML = '';
+
+      bookData.pages.forEach((page, index) => {
+        const isActive = index === bookData.currentPage;
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left px-3.5 py-2.5 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-bold transition tab-slice ${
+          isActive 
+            ? `bg-gradient-to-r ${page.color} text-white shadow-md ring-2 ring-offset-2 ring-indigo-400 tab-active` 
+            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/70'
+        }`;
+        
+        btn.innerHTML = `
+          <div class="flex items-center space-x-2.5 truncate">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${isActive ? 'bg-white/30 text-white' : 'bg-slate-200 text-slate-600'}">
+              ${index + 1}
+            </span>
+            <span class="font-title tracking-wide truncate">${page.titleTag}</span>
+          </div>
+          ${page.inputValue ? '<i data-lucide="check-circle-2" class="w-4 h-4 ' + (isActive ? 'text-white' : 'text-emerald-500') + ' shrink-0"></i>' : ''}
+        `;
+
+        btn.onclick = () => {
+          bookData.currentPage = index;
+          renderCurrentPage();
+          renderSidebar();
+        };
+
+        nav.appendChild(btn);
+      });
+
+      document.getElementById('page-counter').textContent = `${bookData.currentPage + 1} de ${bookData.pages.length}`;
+      lucide.createIcons();
+    }
+
+    function renderBottomStrip() {
+      const container = document.getElementById('bottom-strip-tabs');
+      container.innerHTML = '';
+
+      bookData.pages.forEach((page, idx) => {
+        const isCurrent = idx === bookData.currentPage;
+        const div = document.createElement('div');
+        div.className = `py-1.5 px-1 rounded-xl transition cursor-pointer ${
+          isCurrent 
+            ? `bg-gradient-to-r ${page.color} text-white shadow` 
+            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+        }`;
+        div.textContent = page.titleTag;
+        div.onclick = () => {
+          bookData.currentPage = idx;
+          renderCurrentPage();
+          renderSidebar();
+        };
+        container.appendChild(div);
+      });
+
+      // Progress dots
+      const dotsContainer = document.getElementById('progress-dots');
+      dotsContainer.innerHTML = '';
+      bookData.pages.forEach((_, idx) => {
+        const dot = document.createElement('span');
+        dot.className = `w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+          idx === bookData.currentPage ? 'bg-indigo-600 w-6' : 'bg-slate-200'
+        }`;
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function renderCurrentPage() {
+      const page = bookData.pages[bookData.currentPage];
+      const contentEl = document.getElementById('page-content');
+      const pageContainer = document.getElementById('page-container');
+
+      // Update dynamic border accent
+      pageContainer.className = `flex-1 w-full bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl shadow-indigo-100/70 border-4 border-dashed ${page.borderColor} relative min-h-[640px] flex flex-col justify-between transition-colors duration-300`;
+
+      // Check audio recording status
+      const audioBanner = document.getElementById('user-audio-banner');
+      if (bookData.userAudioRecordings[bookData.currentPage]) {
+        audioBanner.classList.remove('hidden');
+      } else {
+        audioBanner.classList.add('hidden');
+      }
+
+      // Check if page 1 (Cover) or Content page
+      const isCover = bookData.currentPage === 0;
+
+      contentEl.innerHTML = `
+        <div class="flex flex-col h-full justify-between">
+          
+          <!-- Top Page Title / Banner -->
+          <div class="text-center mb-6">
+            <span class="inline-block font-title px-4 py-1 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider mb-2 ${page.badgeColor}">
+              ${page.titleTag}
+            </span>
+            <h2 class="font-title text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">
+              ${isCover ? '¡Yo en el Mapa!' : page.spanishTitle}
+            </h2>
+            <p class="text-xs text-slate-400 mt-1 font-semibold">${page.englishRef}</p>
+          </div>
+
+          <!-- Main Center Workspace: Image Upload & Text Input -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 my-auto items-center">
+            
+            <!-- Image Frame -->
+            <div class="md:col-span-6 flex flex-col items-center">
+              <div class="w-full max-w-sm aspect-square rounded-3xl overflow-hidden border-4 border-slate-200 bg-slate-50 relative group shadow-inner flex items-center justify-center">
+                
+                ${page.imageUrl ? `
+                  <img src="${page.imageUrl}" alt="${page.titleTag}" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" onerror="this.src='${page.defaultImage}'" />
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center space-x-2 no-print">
+                    <label class="cursor-pointer bg-white text-slate-800 p-2.5 rounded-full hover:bg-slate-100 shadow transition font-bold text-xs flex items-center space-x-1">
+                      <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                      <span>Cambiar</span>
+                      <input type="file" accept="image/*" class="hidden image-file-input" />
+                    </label>
+                    <button class="btn-remove-img bg-red-500 text-white p-2.5 rounded-full hover:bg-red-600 shadow transition" title="Eliminar imagen">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                ` : `
+                  <div class="p-6 text-center flex flex-col items-center justify-center space-y-3">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                      <i data-lucide="image-plus" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                      <p class="font-title font-bold text-sm text-slate-700">${page.imagePlaceholder}</p>
+                      <p class="text-xs text-slate-400 mt-0.5">Sube una foto o usa una predeterminada</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-2 pt-2 no-print">
+                      <label class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition shadow">
+                        Subir archivo
+                        <input type="file" accept="image/*" class="hidden image-file-input" />
+                      </label>
+                      <button class="btn-load-sample bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                        Usar ejemplo
+                      </button>
+                    </div>
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <!-- Typing & Input Box Area -->
+            <div class="md:col-span-6 flex flex-col space-y-4">
+              <div class="bg-gradient-to-br from-slate-50 to-indigo-50/40 p-5 rounded-3xl border border-slate-200/80 shadow-sm">
+                <label class="block font-title font-bold text-base md:text-lg text-slate-800 mb-2">
+                  ${page.prompt}
+                </label>
+                
+                ${isCover ? `
+                  <input 
+                    type="text" 
+                    id="page-input" 
+                    value="${page.inputValue}" 
+                    placeholder="${page.placeholder}" 
+                    class="w-full text-lg font-bold font-title px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition bg-white text-slate-800 shadow-inner"
+                  />
+                  <p class="text-xs text-slate-500 mt-2">¡Escribe tu nombre de estudiante para la portada!</p>
+                ` : `
+                  <textarea 
+                    id="page-input" 
+                    rows="3" 
+                    placeholder="${page.placeholder}" 
+                    class="w-full text-base font-semibold px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition bg-white text-slate-800 shadow-inner resize-none"
+                  >${page.inputValue}</textarea>
+                  <p class="text-xs text-slate-500 mt-2">Escribe tu respuesta en español. Se guardará automáticamente.</p>
+                `}
+
+                <!-- Quick Sound Button for this prompt -->
+                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between no-print">
+                  <span class="text-xs text-slate-400 font-medium">Pronunciación en español</span>
+                  <button id="btn-quick-listen" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center space-x-1.5 py-1 px-2.5 rounded-lg hover:bg-indigo-50 transition">
+                    <i data-lucide="volume-1" class="w-4 h-4"></i>
+                    <span>Leer frase</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      // Setup inputs and listeners
+      setupPageEvents();
+      renderBottomStrip();
+      lucide.createIcons();
+    }
+
+    function setupPageEvents() {
+      const page = bookData.pages[bookData.currentPage];
+      const inputEl = document.getElementById('page-input');
+
+      if (inputEl) {
+        inputEl.addEventListener('input', (e) => {
+          page.inputValue = e.target.value;
+          saveState();
+          renderSidebar();
+        });
+      }
+
+      // Quick listen button
+      const quickListen = document.getElementById('btn-quick-listen');
+      if (quickListen) {
+        quickListen.onclick = () => speakSpanishPage();
+      }
+
+      // Image file uploads
+      const fileInputs = document.querySelectorAll('.image-file-input');
+      fileInputs.forEach(input => {
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (loadEvt) => {
+              page.imageUrl = loadEvt.target.result;
+              saveState();
+              renderCurrentPage();
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+      });
+
+      // Sample image button
+      const sampleBtn = document.querySelector('.btn-load-sample');
+      if (sampleBtn) {
+        sampleBtn.onclick = () => {
+          page.imageUrl = page.defaultImage;
+          saveState();
+          renderCurrentPage();
+        };
+      }
+
+      // Remove image button
+      const removeBtn = document.querySelector('.btn-remove-img');
+      if (removeBtn) {
+        removeBtn.onclick = () => {
+          page.imageUrl = '';
+          saveState();
+          renderCurrentPage();
+        };
+      }
+    }
+
+    function speakSpanishPage() {
+      if (!('speechSynthesis' in window)) {
+        displayToast('Tu navegador no soporta síntesis de voz (Text-to-Speech).');
+        return;
+      }
+
+      window.speechSynthesis.cancel(); // Stop any active speech
+
+      const page = bookData.pages[bookData.currentPage];
+      let textToRead = `${page.titleTag}. `;
+      if (bookData.currentPage === 0) {
+        textToRead += `¡Yo en el Mapa! Por: ${page.inputValue || 'Estudiante'}`;
+      } else {
+        textToRead += `${page.prompt} ${page.inputValue || page.placeholder}`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'es-ES'; // Spanish locale
+      utterance.rate = 0.9; // Slightly slower for clear classroom listening
+      utterance.pitch = 1.05;
+
+      // Try selecting a natural Spanish voice
+      const voices = window.speechSynthesis.getVoices();
+      const spanishVoice = voices.find(v => v.lang.startsWith('es') || v.lang.includes('Spanish'));
+      if (spanishVoice) {
+        utterance.voice = spanishVoice;
+      }
+
+      const readBtn = document.getElementById('btn-read-aloud');
+      if (readBtn) {
+        readBtn.classList.add('animate-pulse', 'bg-sky-700');
+      }
+
+      utterance.onend = () => {
+        if (readBtn) {
+          readBtn.classList.remove('animate-pulse', 'bg-sky-700');
+        }
+      };
+
+      utterance.onerror = () => {
+        if (readBtn) {
+          readBtn.classList.remove('animate-pulse', 'bg-sky-700');
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    async function toggleVoiceRecording() {
+      const recordBtn = document.getElementById('btn-record');
+      const micIcon = document.getElementById('mic-icon');
+      const recordLabel = document.getElementById('record-label');
+
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+              audioChunks.push(e.data);
+            }
+          };
+
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            bookData.userAudioRecordings[bookData.currentPage] = audioUrl;
+            
+            // Stop all audio tracks
+            stream.getTracks().forEach(track => track.stop());
+            renderCurrentPage();
+            displayToast('¡Grabación de voz guardada con éxito!');
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+
+          recordBtn.classList.remove('bg-emerald-500', 'hover:bg-emerald-600');
+          recordBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'animate-pulse');
+          recordLabel.textContent = 'Detener grabación';
+          micIcon.setAttribute('data-lucide', 'square');
+          lucide.createIcons();
+          displayToast('Grabando tu voz... Habla claro en español.');
+
+        } catch (err) {
+          console.error(err);
+          displayToast('Por favor permite el acceso al micrófono para grabar.');
+        }
+      } else {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+        isRecording = false;
+        recordBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'animate-pulse');
+        recordBtn.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
+        recordLabel.textContent = 'Grabar mi voz';
+        micIcon.setAttribute('data-lucide', 'mic');
+        lucide.createIcons();
+      }
+    }
+
+    // Play recorded audio
+    function playRecordedAudio() {
+      const audioUrl = bookData.userAudioRecordings[bookData.currentPage];
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }
+    }
+
+    function deleteRecordedAudio() {
+      delete bookData.userAudioRecordings[bookData.currentPage];
+      renderCurrentPage();
+      displayToast('Grabación eliminada.');
+    }
+
+    function displayToast(message) {
+      let toast = document.getElementById('app-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'app-toast';
+        toast.className = 'fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-2xl text-sm font-semibold shadow-2xl z-50 transition-all duration-300 transform translate-y-12 opacity-0 flex items-center space-x-2';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-amber-400"></i> <span>${message}</span>`;
+      lucide.createIcons();
+      toast.classList.remove('translate-y-12', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-12', 'opacity-0');
+      }, 3200);
+    }
+
+    function prepareAndPrint() {
+      const printContainer = document.getElementById('print-booklet-container');
+      printContainer.innerHTML = '';
+      printContainer.className = 'print:block';
+
+      bookData.pages.forEach((page, idx) => {
+        const isCover = idx === 0;
+        const pageEl = document.createElement('div');
+        pageEl.className = 'print-page p-8 mb-8 bg-white min-h-[90vh] flex flex-col justify-between';
+        
+        pageEl.innerHTML = `
+          <div>
+            <div class="text-center border-b-2 border-black pb-4 mb-6">
+              <span class="text-xs uppercase font-bold tracking-widest">${page.titleTag}</span>
+              <h1 class="text-4xl font-extrabold font-title">${isCover ? '¡Yo en el Mapa!' : page.spanishTitle}</h1>
+            </div>
+
+            <div class="flex flex-col items-center my-6">
+              <div class="w-72 h-72 border-2 border-dashed border-black flex items-center justify-center p-2 mb-4">
+                ${page.imageUrl ? `<img src="${page.imageUrl}" class="w-full h-full object-cover"/>` : `<span class="text-sm italic">${page.imagePlaceholder}</span>`}
+              </div>
+
+              <div class="w-full max-w-lg mt-4">
+                <p class="font-bold text-lg mb-2">${page.prompt}</p>
+                <div class="p-4 border-2 border-black rounded-lg min-h-[80px] text-lg font-semibold">
+                  ${page.inputValue || '________________________________________'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t-2 border-black pt-3 flex justify-between text-xs font-bold">
+            <span>Libro: ¡Yo en el Mapa!</span>
+            <span>Página ${idx + 1} de 7</span>
+          </div>
+        `;
+
+        printContainer.appendChild(pageEl);
+      });
+
+      window.print();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Setup Voice list load for speech synthesis
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          // Pre-trigger voice load
+          window.speechSynthesis.getVoices();
+        };
+      }
+
+      // Next / Prev button triggers
+      document.getElementById('btn-prev').onclick = () => {
+        if (bookData.currentPage > 0) {
+          bookData.currentPage--;
+          renderCurrentPage();
+          renderSidebar();
+        }
+      };
+
+      document.getElementById('btn-next').onclick = () => {
+        if (bookData.currentPage < bookData.pages.length - 1) {
+          bookData.currentPage++;
+          renderCurrentPage();
+          renderSidebar();
+        }
+      };
+
+      // Header actions
+      document.getElementById('btn-read-aloud').onclick = speakSpanishPage;
+      document.getElementById('btn-record').onclick = toggleVoiceRecording;
+      document.getElementById('btn-print').onclick = prepareAndPrint;
+
+      // Audio Banner dynamic clicks (delegated)
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('#btn-play-my-audio')) {
+          playRecordedAudio();
+        }
+        if (e.target.closest('#btn-delete-audio')) {
+          deleteRecordedAudio();
+        }
+      });
+
+      // Render initial state
+      renderSidebar();
+      renderCurrentPage();
+      renderBottomStrip();
+    });
+  </script>
+</body>
+</html>

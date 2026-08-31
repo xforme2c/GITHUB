@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estudios Sociales 5.º Grado - Actividad Interactiva Modelo Frayer</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+    }
+    .heading-font {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    .frayer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      position: relative;
+      gap: 1.25rem;
+    }
+    @media (max-width: 768px) {
+      .frayer-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+    .card-glow {
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-page {
+        page-break-after: always;
+        break-after: page;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-amber-200">
+
+  <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="bg-amber-400 text-indigo-950 p-2.5 rounded-2xl shadow-inner font-bold text-xl flex items-center justify-center w-11 h-11">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="heading-font text-xl sm:text-2xl font-bold tracking-wide flex items-center gap-2">
+            Vocabulario de Estudios Sociales
+            <span class="text-xs bg-indigo-900/60 text-amber-300 px-2.5 py-0.5 rounded-full uppercase tracking-wider font-semibold border border-indigo-500/30">5.º Grado • Unidad 1</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-indigo-200">Domina tu vocabulario con el organizador gráfico interactivo Modelo Frayer</p>
+        </div>
+      </div>
+
+      <!-- Header actions & Progress Badge -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Audio Speed Selector -->
+        <div class="flex items-center bg-indigo-800/80 rounded-xl px-2.5 py-1 text-xs border border-indigo-600">
+          <i class="fa-solid fa-gauge text-indigo-300 mr-1.5"></i>
+          <span class="mr-1 text-indigo-200 font-medium">Voz:</span>
+          <select id="audioSpeed" class="bg-indigo-900 text-white rounded px-1.5 py-0.5 outline-none font-semibold cursor-pointer">
+            <option value="0.8">0.8x (Lento)</option>
+            <option value="1.0" selected>1.0x (Normal)</option>
+            <option value="1.2">1.2x (Rápido)</option>
+          </select>
+        </div>
+
+        <!-- Student Progress Pill -->
+        <div class="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex items-center gap-2">
+          <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+          <span class="text-xs font-semibold" id="headerProgress">0 / 13 Completadas</span>
+        </div>
+
+        <!-- Print / Export Button -->
+        <button id="printBtn" onclick="window.print()" title="Imprimir mis Modelos Frayer" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-print"></i>
+          <span class="hidden sm:inline">Imprimir / Guardar PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-5 sm:px-6 flex flex-col gap-6">
+
+    <!-- Top Navigation Carousel & Word List Bar -->
+    <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 no-print">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-indigo-100 text-indigo-700 p-1.5 rounded-lg text-sm font-bold">
+            <i class="fa-solid fa-book-open"></i>
+          </span>
+          <h2 class="heading-font font-bold text-slate-700 text-base sm:text-lg">Palabras de Vocabulario</h2>
+          <span class="text-xs text-slate-400 font-semibold">(Haz clic en una palabra para trabajar en ella)</span>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button id="prevWordBtn" class="px-3 py-1.5 rounded-xl text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 transition">
+            <i class="fa-solid fa-chevron-left text-xs"></i> Anterior
+          </button>
+          <span id="wordCounter" class="text-xs font-bold text-slate-500 px-2">Palabra 1 de 13</span>
+          <button id="nextWordBtn" class="px-3 py-1.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1 transition shadow-sm">
+            Siguiente <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Horizontal Scrollable Pill List -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 pt-1" id="wordPillList">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Vocabulary Reference Clue Box in Spanish -->
+    <section class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4 sm:p-5 relative shadow-sm no-print">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="bg-blue-600 text-white text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md flex items-center gap-1">
+              <i class="fa-solid fa-lightbulb"></i> Referencia del Muro de Palabras
+            </span>
+            <span id="disciplineBadge" class="bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-0.5 rounded-md border border-amber-200">Disciplina de Educación Cívica</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 text-sm">
+            <div class="bg-white/90 p-3 rounded-xl border border-blue-100 shadow-sm">
+              <p class="font-bold text-slate-800 flex items-center gap-1.5 mb-1 text-xs uppercase tracking-wider text-blue-800">
+                <i class="fa-solid fa-bookmark text-blue-600"></i> Definición Oficial:
+              </p>
+              <p id="refDefinition" class="text-slate-700 leading-relaxed font-medium">Cargando...</p>
+              <p id="refEnglish" class="text-xs text-slate-500 italic mt-1 font-normal"></p>
+            </div>
+
+            <div class="bg-white/90 p-3 rounded-xl border border-blue-100 shadow-sm">
+              <p class="font-bold text-slate-800 flex items-center gap-1.5 mb-1 text-xs uppercase tracking-wider text-indigo-800">
+                <i class="fa-solid fa-landmark-dome text-indigo-600"></i> Contexto Histórico / Conexión:
+              </p>
+              <p id="refContext" class="text-slate-700 leading-relaxed font-medium">Cargando...</p>
+              <p id="refContextEnglish" class="text-xs text-slate-500 italic mt-1 font-normal"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Control Action Panel -->
+        <div class="flex md:flex-col items-center justify-center gap-2 border-t md:border-t-0 md:border-l border-blue-200 pt-3 md:pt-0 md:pl-4">
+          <button id="playAudioBtn" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold px-4 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-volume-high text-lg"></i>
+            <span>Escuchar en voz alta</span>
+          </button>
+          <button id="stopAudioBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 transition">
+            <i class="fa-solid fa-stop"></i> Detener
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-md border-2 border-slate-300 relative">
+      
+      <!-- Top Target Vocabulary Word Banner -->
+      <div class="bg-slate-900 text-white rounded-2xl p-4 mb-4 border-2 border-amber-400 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+          <span class="bg-amber-400 text-slate-950 text-xs uppercase font-extrabold px-3 py-1 rounded-lg tracking-wider shadow-sm">Palabra Objetivo</span>
+          <div>
+            <h2 id="centerWordText" class="heading-font text-2xl sm:text-3xl font-bold tracking-wide text-white uppercase leading-tight">SUFRAGIO</h2>
+            <span id="centerWordEnglish" class="text-xs text-slate-300 font-medium italic">En inglés: Suffrage</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button id="centerAudioBtn" title="Escuchar pronunciación" class="bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow">
+            <i class="fa-solid fa-volume-high text-sm"></i> Pronunciar Palabra
+          </button>
+          <button id="centerCompleteToggle" title="Marcar como completada" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-semibold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+            <i class="fa-regular fa-circle-check text-sm" id="completeIcon"></i> <span id="completeText">Marcar Hecho</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Frayer Layout Grid (4 Clean Unobstructed Quadrants) -->
+      <div class="bg-slate-50 rounded-2xl border-4 border-slate-800 p-3.5 sm:p-5 min-h-[520px] frayer-grid">
+        
+        <!-- CUADRANTE 1: SUPERIOR-IZQUIERDA: DEFINICIÓN -->
+        <div class="bg-amber-50/70 rounded-2xl border-2 border-amber-300 p-3.5 sm:p-4 flex flex-col relative focus-within:ring-2 focus-within:ring-amber-400 transition">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="inputDefinition" class="heading-font font-bold text-sm sm:text-base text-amber-900 flex items-center gap-1.5">
+              <span class="bg-amber-400 text-amber-950 w-5 h-5 rounded-full inline-flex items-center justify-center text-xs font-bold">1</span>
+              Definición
+            </label>
+            <span class="text-[11px] text-amber-700 font-semibold bg-amber-100/90 px-2 py-0.5 rounded-full">En tus propias palabras</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-2">¿Qué significa esta palabra? Explícala claramente con tus propias palabras de 5.º grado.</p>
+          <textarea id="inputDefinition" placeholder="Escribe tu definición aquí..." class="w-full flex-1 min-h-[110px] p-2.5 sm:p-3 rounded-xl border border-amber-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400 resize-y font-medium text-xs sm:text-sm leading-relaxed"></textarea>
+          <div class="flex justify-between items-center mt-2 text-xs text-slate-400">
+            <span id="defCharCount">0 caracteres</span>
+            <button type="button" onclick="speakField('inputDefinition', 'Definición')" class="text-amber-700 hover:text-amber-900 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-volume-low"></i> Escuchar mi respuesta
+            </button>
+          </div>
+        </div>
+
+        <!-- CUADRANTE 2: SUPERIOR-DERECHA: HECHOS Y CARACTERÍSTICAS -->
+        <div class="bg-emerald-50/70 rounded-2xl border-2 border-emerald-300 p-3.5 sm:p-4 flex flex-col relative focus-within:ring-2 focus-within:ring-emerald-400 transition">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="inputFacts" class="heading-font font-bold text-sm sm:text-base text-emerald-900 flex items-center gap-1.5">
+              <span class="bg-emerald-400 text-emerald-950 w-5 h-5 rounded-full inline-flex items-center justify-center text-xs font-bold">2</span>
+              Hechos y Características
+            </label>
+            <span class="text-[11px] text-emerald-700 font-semibold bg-emerald-100/90 px-2 py-0.5 rounded-full">Detalles Clave</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-2">¿Cuáles son las partes clave, reglas, pistas históricas o cualidades especiales?</p>
+          <textarea id="inputFacts" placeholder="• Hecho o regla clave...&#10;• ¿Qué la hace especial o importante?&#10;• Evento histórico relacionado..." class="w-full flex-1 min-h-[110px] p-2.5 sm:p-3 rounded-xl border border-emerald-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-y font-medium text-xs sm:text-sm leading-relaxed"></textarea>
+          <div class="flex justify-between items-center mt-2 text-xs text-slate-400">
+            <span id="factsCharCount">0 caracteres</span>
+            <button type="button" onclick="speakField('inputFacts', 'Hechos y Características')" class="text-emerald-700 hover:text-emerald-900 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-volume-low"></i> Escuchar mi respuesta
+            </button>
+          </div>
+        </div>
+
+        <!-- CUADRANTE 3: INFERIOR-IZQUIERDA: USO EN UNA ORACIÓN -->
+        <div class="bg-purple-50/70 rounded-2xl border-2 border-purple-300 p-3.5 sm:p-4 flex flex-col relative focus-within:ring-2 focus-within:ring-purple-400 transition">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="inputSentence" class="heading-font font-bold text-sm sm:text-base text-purple-900 flex items-center gap-1.5">
+              <span class="bg-purple-400 text-purple-950 w-5 h-5 rounded-full inline-flex items-center justify-center text-xs font-bold">3</span>
+              Uso en una Oración
+            </label>
+            <span class="text-[11px] text-purple-700 font-semibold bg-purple-100/90 px-2 py-0.5 rounded-full">Oración de 5.º Grado</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-2">Escribe una oración completa usando esta palabra correctamente en contexto histórico o cívico.</p>
+          <textarea id="inputSentence" placeholder="Escribe tu oración completa aquí (¡recuerda mayúscula inicial y punto final!)..." class="w-full flex-1 min-h-[110px] p-2.5 sm:p-3 rounded-xl border border-purple-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y font-medium text-xs sm:text-sm leading-relaxed"></textarea>
+          <div class="flex justify-between items-center mt-2 text-xs text-slate-400">
+            <span id="sentenceCharCount">0 caracteres</span>
+            <button type="button" onclick="speakField('inputSentence', 'Oración')" class="text-purple-700 hover:text-purple-900 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-volume-low"></i> Escuchar mi respuesta
+            </button>
+          </div>
+        </div>
+
+        <!-- CUADRANTE 4: INFERIOR-DERECHA: EJEMPLOS E ILUSTRACIONES (ESCRIBIR O DIBUJAR) -->
+        <div class="bg-sky-50/70 rounded-2xl border-2 border-sky-300 p-3.5 sm:p-4 flex flex-col relative focus-within:ring-2 focus-within:ring-sky-400 transition">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="inputExamples" class="heading-font font-bold text-sm sm:text-base text-sky-900 flex items-center gap-1.5">
+              <span class="bg-sky-400 text-sky-950 w-5 h-5 rounded-full inline-flex items-center justify-center text-xs font-bold">4</span>
+              Ejemplos e Ilustraciones
+            </label>
+            <!-- Tab switcher between Text and Sketch -->
+            <div class="inline-flex bg-sky-200/80 p-0.5 rounded-lg text-xs font-bold no-print">
+              <button type="button" id="tabTextBtn" class="px-2.5 py-1 rounded-md bg-white text-sky-900 shadow-sm transition">Escribir</button>
+              <button type="button" id="tabDrawBtn" class="px-2.5 py-1 rounded-md text-sky-800 hover:text-sky-950 transition flex items-center gap-1">
+                <i class="fa-solid fa-pencil"></i> Dibujar
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub-modo: Escribir Ejemplos -->
+          <div id="examplesTextContainer" class="flex-1 flex flex-col">
+            <p class="text-xs text-slate-500 mb-2">Escribe ejemplos del mundo real, no-ejemplos o describe un símbolo visual.</p>
+            <textarea id="inputExamples" placeholder="Ejemplo 1: ...&#10;Ejemplo 2: ...&#10;No-ejemplo o descripción del símbolo: ..." class="w-full flex-1 min-h-[110px] p-2.5 sm:p-3 rounded-xl border border-sky-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400 resize-y font-medium text-xs sm:text-sm leading-relaxed"></textarea>
+            <div class="flex justify-between items-center mt-2 text-xs text-slate-400">
+              <span id="examplesCharCount">0 caracteres</span>
+              <button type="button" onclick="speakField('inputExamples', 'Ejemplos')" class="text-sky-700 hover:text-sky-900 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-volume-low"></i> Escuchar mi respuesta
+              </button>
+            </div>
+          </div>
+
+          <!-- Sub-modo: Pizarra de dibujo interactiva -->
+          <div id="examplesDrawContainer" class="hidden flex-1 flex-col">
+            <p class="text-xs text-slate-500 mb-2">Dibuja un símbolo, diagrama o ilustración para representar esta palabra:</p>
+            <div class="relative bg-white rounded-xl border border-sky-300 overflow-hidden flex-1 flex flex-col">
+              <canvas id="sketchCanvas" class="w-full h-32 touch-none bg-white cursor-crosshair"></canvas>
+              <!-- Barra de herramientas de dibujo -->
+              <div class="bg-slate-100 p-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-600 font-semibold">Color:</span>
+                  <button type="button" onclick="setDrawColor('#1e293b')" class="w-5 h-5 rounded-full bg-slate-800 border-2 border-white shadow-sm ring-1 ring-slate-400"></button>
+                  <button type="button" onclick="setDrawColor('#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow-sm"></button>
+                  <button type="button" onclick="setDrawColor('#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow-sm"></button>
+                  <button type="button" onclick="setDrawColor('#16a34a')" class="w-5 h-5 rounded-full bg-emerald-600 border-2 border-white shadow-sm"></button>
+                  <button type="button" onclick="setDrawColor('#d97706')" class="w-5 h-5 rounded-full bg-amber-600 border-2 border-white shadow-sm"></button>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button type="button" id="clearCanvasBtn" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-2 py-1 rounded font-bold transition">
+                    <i class="fa-solid fa-trash-can text-[10px]"></i> Limpiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Action bar below Frayer Model -->
+      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200 no-print">
+        <div class="flex items-center gap-2">
+          <button id="saveWordBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow-sm transition">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar Tarjeta
+          </button>
+          <span id="saveStatus" class="text-xs font-semibold text-emerald-600 hidden flex items-center gap-1">
+            <i class="fa-solid fa-check"></i> ¡Guardado automáticamente!
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="clearCurrentCardBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-xl text-xs transition">
+            <i class="fa-solid fa-rotate-left"></i> Restablecer Tarjeta
+          </button>
+          <button id="viewAllSummaryBtn" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+            <i class="fa-solid fa-table-cells"></i> Revisar Todas (<span id="btnCompletedCount">0</span>/13)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="reviewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="bg-indigo-700 text-white p-4 sm:p-5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-amber-400 text-indigo-950 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div>
+              <h3 class="heading-font font-bold text-lg sm:text-xl">Resumen de Vocabulario - Unidad 1</h3>
+              <p class="text-xs text-indigo-200">Revisa tus 13 modelos Frayer antes de entregar</p>
+            </div>
+          </div>
+          <button id="closeReviewBtn" class="text-white hover:bg-indigo-600 rounded-full w-8 h-8 flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4" id="reviewCardsList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+          <span class="text-xs text-slate-500 font-semibold" id="reviewModalStats">0 palabras completadas</span>
+          <div class="flex gap-2">
+            <button onclick="window.print()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 transition">
+              <i class="fa-solid fa-print mr-1"></i> Imprimir / Exportar Todo
+            </button>
+            <button id="closeReviewBtn2" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="printContainer" class="hidden print:block space-y-8">
+      <!-- Generated when user prints -->
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>Estudios Sociales 5.º Grado • Actividad Interactiva Modelo Frayer</p>
+      <p class="text-slate-400">Narración de audio en español impulsada por Speech Synthesis API</p>
+    </div>
+  </footer>
+
+  <script>
+    const VOCABULARY_LIST = [
+      {
+        id: 1,
+        word: "SUFRAGIO",
+        english: "Suffrage",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "El derecho a votar en las elecciones políticas.",
+        englishDefinition: "The right to vote in political elections.",
+        context: "La decimonovena enmienda garantizó el sufragio femenino en 1920.",
+        englishContext: "The 19th Amendment granted women's suffrage in 1920."
+      },
+      {
+        id: 2,
+        word: "ENMIENDA",
+        english: "Amendment",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Un cambio, adición o corrección formal hecha a una constitución o ley.",
+        englishDefinition: "A formal change, addition, or correction made to a constitution or law.",
+        context: "La Constitución de los EE. UU. ha sido cambiada 27 veces usando enmiendas.",
+        englishContext: "The U.S. Constitution has been changed 27 times using amendments."
+      },
+      {
+        id: 3,
+        word: "CIUDADANO",
+        english: "Citizen",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Un miembro de una comunidad o país que tiene derechos, deberes y responsabilidades oficiales.",
+        englishDefinition: "A member of a community or country who has official rights, duties, and responsibilities.",
+        context: "Los ciudadanos tienen el derecho de votar y la responsabilidad de participar en su comunidad.",
+        englishContext: "Citizens have the right to vote and the responsibility to participate in their community."
+      },
+      {
+        id: 4,
+        word: "CULTURALMENTE DIVERSO",
+        english: "Culturally Diverse",
+        discipline: "Estudios Sociales Unidad 1",
+        definition: "Tener una gran variedad de culturas, orígenes, idiomas y tradiciones diferentes.",
+        englishDefinition: "Having a wide variety of different cultures, backgrounds, languages, and traditions.",
+        context: "Estados Unidos se volvió culturalmente diverso a medida que personas de todo el mundo migraron aquí.",
+        englishContext: "The United States became culturally diverse as people from all over the world migrated here."
+      },
+      {
+        id: 5,
+        word: "MIGRACIÓN",
+        english: "Migration",
+        discipline: "Geografía e Historia",
+        definition: "El movimiento de un grupo de personas de una región, país o lugar para vivir en otro.",
+        englishDefinition: "The movement of a group of people from one region, country, or place to live in another.",
+        context: "Los primeros patrones de migración dieron forma a la geografía y las culturas de América del Norte.",
+        englishContext: "Early migration patterns shaped the geography and cultures of North America."
+      },
+      {
+        id: 6,
+        word: "REFUGIADO",
+        english: "Refugee",
+        discipline: "Estudios Sociales Unidad 1",
+        definition: "Una persona que se ha visto obligada a abandonar su país de origen para escapar del peligro, la guerra o la persecución.",
+        englishDefinition: "A person who has been forced to leave their home country to escape danger, war, or persecution.",
+        context: "A lo largo de la historia, los refugiados se han mudado para encontrar seguridad y reconstruir sus vidas.",
+        englishContext: "Throughout history, refugees have moved to find safety and rebuild their lives."
+      },
+      {
+        id: 7,
+        word: "EMANCIPACIÓN",
+        english: "Emancipation",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Ser liberado del control, poder o la esclavitud.",
+        englishDefinition: "To be set free from control, power, or slavery.",
+        context: "El presidente Abraham Lincoln emitió la Proclamación de Emancipación durante la Guerra Civil para declarar libres a las personas esclavizadas en los estados confederados.",
+        englishContext: "President Abraham Lincoln issued the Emancipation Proclamation during the Civil War to declare that enslaved people in Confederate states were free."
+      },
+      {
+        id: 8,
+        word: "PROCLAMACIÓN",
+        english: "Proclamation",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Un anuncio público oficial hecho por un líder (como un gobernador o presidente) que tiene fuerza de ley.",
+        englishDefinition: "An official public announcement made by a leader (like a governor or president) that has the force of law.",
+        context: "Estudiamos la proclamación del gobernador de Kentucky Andy Beshear y el proyecto de ley federal del presidente Biden que reconoce Juneteenth como un feriado oficial.",
+        englishContext: "We study Kentucky Governor Andy Beshear's proclamation and President Biden's federal bill making Juneteenth a recognized holiday."
+      },
+      {
+        id: 9,
+        word: "13ª ENMIENDA",
+        english: "13th Amendment",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Una adición a la Constitución de los EE. UU. que abolió y prohibió permanentemente la esclavitud en todo Estados Unidos.",
+        englishDefinition: "An addition to the U.S. Constitution that permanently outlawed and abolished slavery across the entire United States.",
+        context: "Mientras que la Proclamación de Emancipación fue una orden militar en tiempos de guerra, la 13ª Enmienda modificó permanentemente la Constitución para asegurar la libertad.",
+        englishContext: "While the Emancipation Proclamation was a wartime order, the 13th Amendment permanently altered the Constitution to secure freedom."
+      },
+      {
+        id: 10,
+        word: "CONSENSO",
+        english: "Consensus",
+        discipline: "Disciplina de Educación Cívica",
+        definition: "Un acuerdo que cada miembro de un grupo o comunidad puede apoyar y aceptar seguir.",
+        englishDefinition: "An agreement that every single member of a group or community can support and agree to follow.",
+        context: "En un salón de clases democrático, construimos consensos al crear nuestros Acuerdos de Clase, asegurando que se respete la voz de todos.",
+        englishContext: "In a democratic classroom, we build consensus when creating our Classroom Agreements, ensuring everyone's voice is respected."
+      },
+      {
+        id: 11,
+        word: "CONMEMORAR",
+        english: "Commemorate",
+        discipline: "Disciplina de Historia",
+        definition: "Honrar, recordar y mostrar respeto por un evento histórico importante, persona o lugar.",
+        englishDefinition: "To honor, remember, and show respect for an important historical event, person, or place.",
+        context: "Colocamos marcadores y placas históricas públicas (como la placa en Galveston, Texas) para conmemorar los lugares donde ocurrió la historia.",
+        englishContext: "We place public historical markers (like the plaque in Galveston, Texas) to commemorate where history happened."
+      },
+      {
+        id: 12,
+        word: "RESILIENCIA",
+        english: "Resilience",
+        discipline: "Disciplina de Historia",
+        definition: "La fuerza, valentía y determinación para seguir adelante y trabajar por el cambio incluso en momentos sumamente difíciles.",
+        englishDefinition: "The strength, bravery, and drive to keep going and working for change even during incredibly difficult times.",
+        context: "Estudiamos la resiliencia y la iniciativa de las familias afroamericanas que celebraron Juneteenth y lucharon por la igualdad de derechos.",
+        englishContext: "We study the resilience and agency of newly freed Black families who celebrated Juneteenth and pushed for equal rights."
+      },
+      {
+        id: 13,
+        word: "CICLO DE LIBERTAD",
+        english: "Cycle of Freedom",
+        discipline: "Disciplina de Historia",
+        definition: "La idea de que el 4 de Julio (Día de la Independencia) y Juneteenth (Día de la Emancipación) se unen para completar la historia de la libertad en Estados Unidos.",
+        englishDefinition: "The idea that the 4th of July (Independence Day) and Juneteenth (Emancipation Day) work together to complete America's story of liberty.",
+        context: "Este concepto demuestra que la libertad fue un proceso continuo que no se hizo realidad para todas las personas en 1776.",
+        englishContext: "This concept shows that freedom was a long process that was not fully realized for all people in 1776."
+      }
+    ];
+
+    // State object for student's Frayer models
+    let currentIndex = 0;
+    let studentData = {};
+    let activeDrawColor = "#1e293b";
+    let isDrawing = false;
+    let canvas, ctx;
+
+    // Load saved data from localStorage
+    function loadSavedData() {
+      try {
+        const saved = localStorage.getItem("grade5_frayer_models_es");
+        if (saved) {
+          studentData = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn("Storage not accessible, using in-memory state");
+      }
+
+      // Initialize defaults if empty
+      VOCABULARY_LIST.forEach(item => {
+        if (!studentData[item.id]) {
+          studentData[item.id] = {
+            definition: "",
+            facts: "",
+            sentence: "",
+            examples: "",
+            drawingData: null,
+            isCompleted: false
+          };
+        }
+      });
+    }
+
+    // Save to storage
+    function persistData() {
+      try {
+        localStorage.setItem("grade5_frayer_models_es", JSON.stringify(studentData));
+      } catch (e) {
+        // Fallback
+      }
+      updateStats();
+    }
+
+    function renderWordPills() {
+      const pillList = document.getElementById("wordPillList");
+      pillList.innerHTML = "";
+
+      VOCABULARY_LIST.forEach((item, idx) => {
+        const data = studentData[item.id] || {};
+        const isCurrent = idx === currentIndex;
+        const isDone = data.isCompleted;
+
+        const pill = document.createElement("button");
+        pill.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all flex-shrink-0 ${
+          isCurrent 
+            ? "bg-indigo-600 text-white shadow-md ring-2 ring-indigo-300" 
+            : isDone
+              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
+        }`;
+
+        pill.innerHTML = `
+          <span>${idx + 1}. ${item.word}</span>
+          ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>' : ''}
+        `;
+
+        pill.addEventListener("click", () => {
+          saveCurrentFormValues();
+          currentIndex = idx;
+          loadCurrentWord();
+        });
+
+        pillList.appendChild(pill);
+      });
+    }
+
+    // Update the UI with the active word's data
+    function loadCurrentWord() {
+      const item = VOCABULARY_LIST[currentIndex];
+      const data = studentData[item.id] || { definition: "", facts: "", sentence: "", examples: "", drawingData: null, isCompleted: false };
+
+      // Reference Card
+      document.getElementById("disciplineBadge").innerText = item.discipline;
+      document.getElementById("refDefinition").innerText = item.definition;
+      document.getElementById("refEnglish").innerText = `In English: "${item.englishDefinition}"`;
+      document.getElementById("refContext").innerText = item.context;
+      document.getElementById("refContextEnglish").innerText = `Historical context: "${item.englishContext}"`;
+
+      // Top Target Word Hub
+      document.getElementById("centerWordText").innerText = item.word;
+      document.getElementById("centerWordEnglish").innerText = `En inglés: ${item.english}`;
+      
+      const completeBtn = document.getElementById("centerCompleteToggle");
+      const completeIcon = document.getElementById("completeIcon");
+      const completeText = document.getElementById("completeText");
+
+      if (data.isCompleted) {
+        completeBtn.className = "bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 font-semibold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow";
+        completeIcon.className = "fa-solid fa-circle-check";
+        completeText.innerText = "¡Completado!";
+      } else {
+        completeBtn.className = "bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-semibold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow";
+        completeIcon.className = "fa-regular fa-circle-check";
+        completeText.innerText = "Marcar Hecho";
+      }
+
+      // Populate textareas
+      document.getElementById("inputDefinition").value = data.definition || "";
+      document.getElementById("inputFacts").value = data.facts || "";
+      document.getElementById("inputSentence").value = data.sentence || "";
+      document.getElementById("inputExamples").value = data.examples || "";
+
+      // Character counters
+      updateCharCounters();
+
+      // Clear & load canvas
+      clearCanvas();
+      if (data.drawingData) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0);
+        img.src = data.drawingData;
+      }
+
+      // Word counter
+      document.getElementById("wordCounter").innerText = `Palabra ${currentIndex + 1} de ${VOCABULARY_LIST.length}`;
+
+      // Navigation button states
+      document.getElementById("prevWordBtn").disabled = currentIndex === 0;
+      document.getElementById("prevWordBtn").classList.toggle("opacity-50", currentIndex === 0);
+      document.getElementById("nextWordBtn").disabled = currentIndex === VOCABULARY_LIST.length - 1;
+      document.getElementById("nextWordBtn").classList.toggle("opacity-50", currentIndex === VOCABULARY_LIST.length - 1);
+
+      renderWordPills();
+      updateStats();
+    }
+
+    // Save current textarea values into state
+    function saveCurrentFormValues() {
+      const item = VOCABULARY_LIST[currentIndex];
+      if (!item) return;
+
+      const def = document.getElementById("inputDefinition").value;
+      const facts = document.getElementById("inputFacts").value;
+      const sent = document.getElementById("inputSentence").value;
+      const ex = document.getElementById("inputExamples").value;
+      const drawing = isCanvasBlank(canvas) ? null : canvas.toDataURL();
+
+      studentData[item.id].definition = def;
+      studentData[item.id].facts = facts;
+      studentData[item.id].sentence = sent;
+      studentData[item.id].examples = ex;
+      if (drawing) {
+        studentData[item.id].drawingData = drawing;
+      }
+
+      // Auto check completion if 3 or more boxes have reasonable length
+      if (def.trim().length > 3 && facts.trim().length > 3 && sent.trim().length > 3) {
+        studentData[item.id].isCompleted = true;
+      }
+
+      persistData();
+    }
+
+    // Character counter updates
+    function updateCharCounters() {
+      document.getElementById("defCharCount").innerText = `${document.getElementById("inputDefinition").value.length} caracteres`;
+      document.getElementById("factsCharCount").innerText = `${document.getElementById("inputFacts").value.length} caracteres`;
+      document.getElementById("sentenceCharCount").innerText = `${document.getElementById("inputSentence").value.length} caracteres`;
+      document.getElementById("examplesCharCount").innerText = `${document.getElementById("inputExamples").value.length} caracteres`;
+    }
+
+    // Check if canvas is empty
+    function isCanvasBlank(cnv) {
+      if (!cnv) return true;
+      const blank = document.createElement('canvas');
+      blank.width = cnv.width;
+      blank.height = cnv.height;
+      return cnv.toDataURL() === blank.toDataURL();
+    }
+
+    // Update overall stats
+    function updateStats() {
+      const completedCount = Object.values(studentData).filter(d => d.isCompleted).length;
+      document.getElementById("headerProgress").innerText = `${completedCount} / ${VOCABULARY_LIST.length} Completadas`;
+      document.getElementById("btnCompletedCount").innerText = completedCount;
+    }
+
+    let speechSynth = window.speechSynthesis;
+    let currentUtterance = null;
+
+    function getSpanishVoice() {
+      if (!speechSynth) return null;
+      const voices = speechSynth.getVoices();
+      return voices.find(v => v.lang.startsWith("es") || v.lang.includes("es-US") || v.lang.includes("es-MX") || v.lang.includes("es-ES")) || null;
+    }
+
+    function playVocabularyAudio() {
+      if (!speechSynth) return;
+      stopAudio();
+
+      const item = VOCABULARY_LIST[currentIndex];
+      const speed = parseFloat(document.getElementById("audioSpeed").value) || 1.0;
+
+      const script = `Palabra de vocabulario: ${item.word}. Definición: ${item.definition}. Contexto histórico: ${item.context}. En inglés, esta palabra se dice: ${item.english}.`;
+
+      currentUtterance = new SpeechSynthesisUtterance(script);
+      currentUtterance.lang = "es-ES";
+      currentUtterance.rate = speed;
+      currentUtterance.pitch = 1.0;
+
+      const spanishVoice = getSpanishVoice();
+      if (spanishVoice) currentUtterance.voice = spanishVoice;
+
+      // Button visual state
+      const playBtn = document.getElementById("playAudioBtn");
+      playBtn.classList.add("bg-emerald-600", "animate-pulse");
+      playBtn.innerHTML = `<i class="fa-solid fa-volume-high text-lg"></i> <span>Leyendo...</span>`;
+
+      currentUtterance.onend = () => {
+        resetAudioButton();
+      };
+      currentUtterance.onerror = () => {
+        resetAudioButton();
+      };
+
+      speechSynth.speak(currentUtterance);
+    }
+
+    function pronounceWordOnly() {
+      if (!speechSynth) return;
+      stopAudio();
+
+      const item = VOCABULARY_LIST[currentIndex];
+      const speed = parseFloat(document.getElementById("audioSpeed").value) || 1.0;
+
+      const utt = new SpeechSynthesisUtterance(item.word);
+      utt.lang = "es-ES";
+      utt.rate = speed * 0.9;
+      const spanishVoice = getSpanishVoice();
+      if (spanishVoice) utt.voice = spanishVoice;
+
+      speechSynth.speak(utt);
+    }
+
+    function speakField(textareaId, label) {
+      if (!speechSynth) return;
+      stopAudio();
+
+      const text = document.getElementById(textareaId).value.trim();
+      if (!text) {
+        const prompt = new SpeechSynthesisUtterance(`El cuadro de ${label} está vacío. Escribe tu respuesta primero.`);
+        prompt.lang = "es-ES";
+        const spanishVoice = getSpanishVoice();
+        if (spanishVoice) prompt.voice = spanishVoice;
+        speechSynth.speak(prompt);
+        return;
+      }
+
+      const utt = new SpeechSynthesisUtterance(`${label}: ${text}`);
+      utt.lang = "es-ES";
+      utt.rate = parseFloat(document.getElementById("audioSpeed").value) || 1.0;
+      const spanishVoice = getSpanishVoice();
+      if (spanishVoice) utt.voice = spanishVoice;
+      speechSynth.speak(utt);
+    }
+
+    function stopAudio() {
+      if (speechSynth && speechSynth.speaking) {
+        speechSynth.cancel();
+      }
+      resetAudioButton();
+    }
+
+    function resetAudioButton() {
+      const playBtn = document.getElementById("playAudioBtn");
+      playBtn.classList.remove("bg-emerald-600", "animate-pulse");
+      playBtn.className = "w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold px-4 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition";
+      playBtn.innerHTML = `<i class="fa-solid fa-volume-high text-lg"></i> <span>Escuchar en voz alta</span>`;
+    }
+
+    function initCanvas() {
+      canvas = document.getElementById("sketchCanvas");
+      ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = activeDrawColor;
+      }
+
+      resizeCanvas();
+      window.addEventListener("resize", () => {
+        const temp = canvas.toDataURL();
+        resizeCanvas();
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
+        img.src = temp;
+      });
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function drawMove(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function endDraw() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        ctx.closePath();
+        saveCurrentFormValues();
+      }
+
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", drawMove);
+      window.addEventListener("mouseup", endDraw);
+
+      canvas.addEventListener("touchstart", startDraw, { passive: false });
+      canvas.addEventListener("touchmove", drawMove, { passive: false });
+      window.addEventListener("touchend", endDraw);
+    }
+
+    function setDrawColor(color) {
+      activeDrawColor = color;
+      if (ctx) ctx.strokeStyle = color;
+    }
+
+    function clearCanvas() {
+      if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function openReviewModal() {
+      saveCurrentFormValues();
+      const listContainer = document.getElementById("reviewCardsList");
+      listContainer.innerHTML = "";
+
+      let count = 0;
+      VOCABULARY_LIST.forEach((item, index) => {
+        const data = studentData[item.id] || {};
+        if (data.isCompleted) count++;
+
+        const card = document.createElement("div");
+        card.className = "bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 transition hover:border-indigo-300";
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b pb-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="bg-indigo-700 text-white font-bold text-xs px-2.5 py-1 rounded-lg">#${index + 1}</span>
+              <h4 class="heading-font font-bold text-lg text-slate-800">${item.word}</h4>
+              <span class="text-xs text-slate-500 italic">(${item.english})</span>
+            </div>
+            <button onclick="jumpToWord(${index})" class="text-xs font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-3 py-1 rounded-lg transition">
+              <i class="fa-solid fa-pen-to-square"></i> Editar
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="font-bold text-amber-900 block mb-0.5">1. Definición:</span>
+              <p class="text-slate-700">${data.definition ? data.definition : '<span class="text-slate-400 italic">Aún sin completar</span>'}</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="font-bold text-emerald-900 block mb-0.5">2. Hechos y Características:</span>
+              <p class="text-slate-700">${data.facts ? data.facts : '<span class="text-slate-400 italic">Aún sin completar</span>'}</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="font-bold text-purple-900 block mb-0.5">3. Uso en una Oración:</span>
+              <p class="text-slate-700">${data.sentence ? data.sentence : '<span class="text-slate-400 italic">Aún sin completar</span>'}</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+              <span class="font-bold text-sky-900 block mb-0.5">4. Ejemplos e Ilustración:</span>
+              <p class="text-slate-700 mb-1">${data.examples ? data.examples : '<span class="text-slate-400 italic">Sin texto escrito</span>'}</p>
+              ${data.drawingData ? `<img src="${data.drawingData}" class="h-20 border rounded bg-white mt-1 object-contain" alt="Dibujo" />` : ''}
+            </div>
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+
+      document.getElementById("reviewModalStats").innerText = `${count} de ${VOCABULARY_LIST.length} palabras completadas`;
+      document.getElementById("reviewModal").classList.remove("hidden");
+    }
+
+    function jumpToWord(index) {
+      document.getElementById("reviewModal").classList.add("hidden");
+      currentIndex = index;
+      loadCurrentWord();
+    }
+
+    // Build print container for crisp paper/PDF printouts
+    function preparePrintView() {
+      saveCurrentFormValues();
+      const printContainer = document.getElementById("printContainer");
+      printContainer.innerHTML = `
+        <div class="text-center border-b-2 border-black pb-4 mb-6">
+          <h1 class="text-2xl font-black uppercase tracking-wide">5.º Grado Estudios Sociales • Portafolio de Vocabulario Modelo Frayer</h1>
+          <p class="text-sm">Nombre del Estudiante: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; Fecha: _________________</p>
+        </div>
+      `;
+
+      VOCABULARY_LIST.forEach((item, idx) => {
+        const data = studentData[item.id] || {};
+        const page = document.createElement("div");
+        page.className = "print-page mb-8 border-4 border-black p-4 rounded-xl";
+
+        page.innerHTML = `
+          <div class="text-center font-bold text-sm uppercase mb-2 border-b pb-1">
+            Palabra #${idx + 1}: ${item.word} (${item.discipline})
+          </div>
+
+          <div class="grid grid-cols-2 grid-rows-2 gap-4 border-2 border-black min-h-[350px] p-2 relative">
+            <div class="border border-black p-2 rounded">
+              <div class="font-bold text-xs uppercase mb-1">1. Definición (En tus propias palabras)</div>
+              <div class="text-xs whitespace-pre-wrap">${data.definition || '(Sin respuesta)'}</div>
+            </div>
+            <div class="border border-black p-2 rounded">
+              <div class="font-bold text-xs uppercase mb-1">2. Hechos y Características</div>
+              <div class="text-xs whitespace-pre-wrap">${data.facts || '(Sin respuesta)'}</div>
+            </div>
+
+            <div class="border border-black p-2 rounded">
+              <div class="font-bold text-xs uppercase mb-1">3. Uso en una Oración</div>
+              <div class="text-xs whitespace-pre-wrap">${data.sentence || '(Sin respuesta)'}</div>
+            </div>
+            <div class="border border-black p-2 rounded">
+              <div class="font-bold text-xs uppercase mb-1">4. Ejemplos e Ilustraciones</div>
+              <div class="text-xs whitespace-pre-wrap">${data.examples || ''}</div>
+              ${data.drawingData ? `<img src="${data.drawingData}" class="h-24 object-contain mt-2 mx-auto border" />` : ''}
+            </div>
+          </div>
+        `;
+        printContainer.appendChild(page);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadSavedData();
+      initCanvas();
+      loadCurrentWord();
+
+      // Audio buttons
+      document.getElementById("playAudioBtn").addEventListener("click", playVocabularyAudio);
+      document.getElementById("stopAudioBtn").addEventListener("click", stopAudio);
+      document.getElementById("centerAudioBtn").addEventListener("click", pronounceWordOnly);
+
+      // Tab switcher for Examples/Illustrations
+      const tabTextBtn = document.getElementById("tabTextBtn");
+      const tabDrawBtn = document.getElementById("tabDrawBtn");
+      const textContainer = document.getElementById("examplesTextContainer");
+      const drawContainer = document.getElementById("examplesDrawContainer");
+
+      tabTextBtn.addEventListener("click", () => {
+        textContainer.classList.remove("hidden");
+        textContainer.classList.add("flex");
+        drawContainer.classList.add("hidden");
+        drawContainer.classList.remove("flex");
+
+        tabTextBtn.className = "px-2.5 py-1 rounded-md bg-white text-sky-900 shadow-sm transition";
+        tabDrawBtn.className = "px-2.5 py-1 rounded-md text-sky-800 hover:text-sky-950 transition flex items-center gap-1";
+      });
+
+      tabDrawBtn.addEventListener("click", () => {
+        drawContainer.classList.remove("hidden");
+        drawContainer.classList.add("flex");
+        textContainer.classList.add("hidden");
+        textContainer.classList.remove("flex");
+
+        tabDrawBtn.className = "px-2.5 py-1 rounded-md bg-white text-sky-900 shadow-sm transition flex items-center gap-1";
+        tabTextBtn.className = "px-2.5 py-1 rounded-md text-sky-800 hover:text-sky-950 transition";
+      });
+
+      // Clear Canvas button
+      document.getElementById("clearCanvasBtn").addEventListener("click", () => {
+        clearCanvas();
+        saveCurrentFormValues();
+      });
+
+      // Form input change listeners (autosave on type)
+      ["inputDefinition", "inputFacts", "inputSentence", "inputExamples"].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener("input", () => {
+          updateCharCounters();
+          saveCurrentFormValues();
+        });
+      });
+
+      // Navigation Prev / Next
+      document.getElementById("prevWordBtn").addEventListener("click", () => {
+        if (currentIndex > 0) {
+          saveCurrentFormValues();
+          currentIndex--;
+          loadCurrentWord();
+        }
+      });
+
+      document.getElementById("nextWordBtn").addEventListener("click", () => {
+        if (currentIndex < VOCABULARY_LIST.length - 1) {
+          saveCurrentFormValues();
+          currentIndex++;
+          loadCurrentWord();
+        }
+      });
+
+      // Complete toggle button
+      document.getElementById("centerCompleteToggle").addEventListener("click", () => {
+        const item = VOCABULARY_LIST[currentIndex];
+        studentData[item.id].isCompleted = !studentData[item.id].isCompleted;
+        saveCurrentFormValues();
+        loadCurrentWord();
+      });
+
+      // Save button manual feedback
+      document.getElementById("saveWordBtn").addEventListener("click", () => {
+        saveCurrentFormValues();
+        const status = document.getElementById("saveStatus");
+        status.classList.remove("hidden");
+        setTimeout(() => status.classList.add("hidden"), 2500);
+      });
+
+      // Reset current card
+      document.getElementById("clearCurrentCardBtn").addEventListener("click", () => {
+        const item = VOCABULARY_LIST[currentIndex];
+        studentData[item.id] = {
+          definition: "",
+          facts: "",
+          sentence: "",
+          examples: "",
+          drawingData: null,
+          isCompleted: false
+        };
+        loadCurrentWord();
+        persistData();
+      });
+
+      // Review Modal listeners
+      document.getElementById("viewAllSummaryBtn").addEventListener("click", openReviewModal);
+      document.getElementById("closeReviewBtn").addEventListener("click", () => {
+        document.getElementById("reviewModal").classList.add("hidden");
+      });
+      document.getElementById("closeReviewBtn2").addEventListener("click", () => {
+        document.getElementById("reviewModal").classList.add("hidden");
+      });
+
+      // Print button listener
+      window.addEventListener("beforeprint", preparePrintView);
+    });
+  </script>
+</body>
+</html>

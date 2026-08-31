@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Diario de Lectura - Menú de Opciones</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Playful classroom and clean sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['"Fredoka"', 'cursive', 'sans-serif'],
+            nunito: ['"Nunito"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              blue: '#3B82F6',
+              emerald: '#10B981',
+              orange: '#F97316',
+              purple: '#8B5CF6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: radial-gradient(circle at 50% 0%, #f8fafc 0%, #e2e8f0 100%);
+      min-height: 100vh;
+    }
+    .font-title {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    /* Tab layered effect */
+    .menu-card {
+      transition: all 0.2s ease-in-out;
+    }
+    .menu-card:hover {
+      transform: translateY(-2px);
+    }
+    .menu-active {
+      transform: scale(1.02);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-right: 6px solid currentColor;
+    }
+    
+    /* Smooth lined textareas for elementary writing */
+    textarea {
+      background-image: linear-gradient(transparent, transparent calc(100% - 2px), #e2e8f0 0px);
+      background-size: 100% 2rem;
+      line-height: 2rem;
+      padding-top: 0.5rem;
+    }
+
+    /* Printable styling */
+    @media print {
+      body { background: white; }
+      .no-print { display: none !important; }
+      .print-page {
+        page-break-after: always;
+        box-shadow: none !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 12px;
+      }
+      textarea {
+        background-image: none;
+        border: 1px solid #cbd5e1 !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+  <header class="no-print bg-white/95 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+          <i data-lucide="book-open-check" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <h1 class="font-title text-2xl md:text-3xl font-bold text-slate-800">
+            Mi Diario de Lectura
+          </h1>
+          <p class="text-sm font-bold text-slate-500 hidden sm:block">Menú de Opciones para Lectura Independiente</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="btn-read-aloud" class="flex items-center space-x-2 bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold text-sm px-4 py-2.5 rounded-xl transition border border-sky-200" title="Escuchar la página actual">
+          <i data-lucide="volume-2" class="w-5 h-5"></i>
+          <span class="hidden md:inline">Leer en Voz Alta</span>
+        </button>
+
+        <button id="btn-record" class="flex items-center space-x-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-sm px-4 py-2.5 rounded-xl transition border border-emerald-200" title="Graba tu propia voz">
+          <i data-lucide="mic" class="w-5 h-5" id="mic-icon"></i>
+          <span id="record-label" class="hidden md:inline">Grabar Mi Voz</span>
+        </button>
+
+        <button id="btn-print" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition shadow-md" title="Imprimir cuadernillo">
+          <i data-lucide="printer" class="w-5 h-5"></i>
+          <span class="hidden sm:inline">Imprimir Trabajo</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 items-start">
+    
+    <!-- Left Sidebar: Menu of Options -->
+    <aside class="no-print w-full lg:w-80 bg-white rounded-3xl p-5 shadow-lg border border-slate-100 shrink-0">
+      <div class="mb-4">
+        <h2 class="font-title text-xl font-bold text-slate-800">Menú de Lectura</h2>
+        <p class="text-sm text-slate-500 font-medium mt-1">Elige una actividad para tu lectura de hoy.</p>
+      </div>
+
+      <nav class="flex flex-col space-y-3" id="menu-nav">
+        <!-- Populated by JS -->
+      </nav>
+
+      <div class="mt-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-900 font-medium">
+        <div class="flex items-center space-x-2 mb-2">
+          <i data-lucide="lightbulb" class="w-5 h-5 text-amber-500"></i>
+          <strong class="font-title text-lg">¡Consejo de hoy!</strong>
+        </div>
+        <p>Usa el <strong>Banco de Palabras</strong> en cada página. ¡Haz clic en cualquier palabra para agregarla a tus oraciones!</p>
+      </div>
+    </aside>
+
+    <!-- Center Stage: The Interactive Form -->
+    <section class="flex-1 w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-t-8 relative min-h-[600px] flex flex-col" id="page-container">
+      
+      <!-- Audio Player Banner -->
+      <div id="user-audio-banner" class="hidden no-print mb-6 bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3 flex items-center justify-between text-emerald-800 animate-fadeIn">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-emerald-200 rounded-full flex items-center justify-center">
+            <i data-lucide="audio-lines" class="w-5 h-5 text-emerald-700"></i>
+          </div>
+          <div>
+            <p class="font-bold">¡Grabación de Voz Guardada!</p>
+            <p class="text-xs font-medium opacity-80">Puedes escuchar tu lectura o borrarla.</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="btn-play-my-audio" class="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 flex items-center space-x-2 transition shadow">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span>Escuchar</span>
+          </button>
+          <button id="btn-delete-audio" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition" title="Borrar grabación">
+            <i data-lucide="trash-2" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Form Content -->
+      <div id="page-content" class="flex-grow flex flex-col w-full max-w-4xl mx-auto">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+  </main>
+
+  <div id="print-container" class="hidden">
+    <!-- Populated for printing -->
+  </div>
+
+  <script>
+    // State management for Spanish Reading Options
+    const readingData = {
+      currentPage: 0,
+      userAudioRecordings: {}, // pageId -> audio URL
+      lastFocusedInput: null,
+      pages: [
+        {
+          id: 'cover',
+          title: 'Información de mi Libro',
+          subtitle: 'Preparándome para leer',
+          icon: 'book',
+          color: 'text-blue-600',
+          bgColor: 'bg-blue-50',
+          borderColor: 'border-blue-500',
+          type: 'cover',
+          wordBank: [],
+          fields: {
+            title: '',
+            author: '',
+            imageUrl: ''
+          }
+        },
+        {
+          id: 'summary',
+          title: 'Inicio de Resumen',
+          subtitle: 'Vuelve a contar lo que sucedió',
+          icon: 'list-ordered',
+          color: 'text-emerald-600',
+          bgColor: 'bg-emerald-50',
+          borderColor: 'border-emerald-500',
+          type: 'frames',
+          wordBank: ['primero', 'luego', 'después', 'finalmente', 'de repente', 'porque', 'descubrió', 'decidió', 'problema', 'solución'],
+          frames: [
+            { id: 'f1', prompt: 'Hoy leí sobre...', placeholder: '¿Cuál fue el evento principal?', value: '' },
+            { id: 'f2', prompt: 'Primero,', placeholder: '¿Qué ocurrió al principio?', value: '' },
+            { id: 'f3', prompt: 'Luego,', placeholder: '¿Qué pasó después?', value: '' },
+            { id: 'f4', prompt: 'Finalmente,', placeholder: '¿Cómo terminó hoy la lectura?', value: '' }
+          ]
+        },
+        {
+          id: 'claim',
+          title: 'Afirmación y Evidencia',
+          subtitle: 'Comparte tu opinión con pruebas del libro',
+          icon: 'search',
+          color: 'text-orange-600',
+          bgColor: 'bg-orange-50',
+          borderColor: 'border-orange-500',
+          type: 'frames',
+          wordBank: ['pienso que', 'creo que', 'importante', 'valiente', 'injusto', 'demuestra', 'explica', 'muestra', 'significa', 'porque'],
+          frames: [
+            { id: 'f1', prompt: 'Mi opinión sobre el texto es:', placeholder: 'Yo creo / pienso que...', value: '' },
+            { id: 'f2', prompt: 'En la página ____, el autor o la autora escribe:', placeholder: '"Copia una oración o cita del libro aquí..."', value: '' },
+            { id: 'f3', prompt: 'Esto demuestra que:', placeholder: 'Explica qué significa la cita que copiaste...', value: '' }
+          ]
+        },
+        {
+          id: 'character',
+          title: 'Reflexión del Personaje',
+          subtitle: 'Enfócate en quién está en la historia',
+          icon: 'user',
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-50',
+          borderColor: 'border-purple-500',
+          type: 'frames',
+          wordBank: ['valiente', 'inteligente', 'nervioso/a', 'emocionado/a', 'amable', 'terco/a', 'sorprendido/a', 'cambió', 'aprendió', 'sintió'],
+          frames: [
+            { id: 'f1', prompt: 'Un personaje sobre el que leí hoy es:', placeholder: 'Nombre del personaje...', value: '' },
+            { id: 'f2', prompt: 'Una palabra para describirlo/a hoy es:', placeholder: 'Elige una palabra que lo describa...', value: '' },
+            { id: 'f3', prompt: 'Yo sé esto porque:', placeholder: '¿Qué hizo o qué dijo en la historia?', value: '' }
+          ]
+        }
+      ]
+    };
+
+    // Keep track of the last focused input for word bank insertion
+    document.addEventListener('focusin', (e) => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+        if(e.target.type !== 'file') {
+          readingData.lastFocusedInput = e.target;
+        }
+      }
+    });
+
+    // Load from local storage
+    try {
+      const saved = localStorage.getItem('reading_journal_data_es_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        parsed.forEach((savedPage, idx) => {
+          if (readingData.pages[idx]) {
+            if (readingData.pages[idx].type === 'cover') {
+              readingData.pages[idx].fields = savedPage.fields || readingData.pages[idx].fields;
+            } else if (readingData.pages[idx].type === 'frames') {
+              if (savedPage.frames) {
+                readingData.pages[idx].frames.forEach((frame, fIdx) => {
+                   if (savedPage.frames[fIdx]) frame.value = savedPage.frames[fIdx].value;
+                });
+              }
+            }
+          }
+        });
+      }
+    } catch(e) {
+      console.warn("Could not load from localStorage", e);
+    }
+
+    function saveState() {
+      try {
+        const toSave = readingData.pages.map(p => {
+          if (p.type === 'cover') return { type: p.type, fields: p.fields };
+          return { type: p.type, frames: p.frames.map(f => ({ value: f.value })) };
+        });
+        localStorage.setItem('reading_journal_data_es_v1', JSON.stringify(toSave));
+      } catch (e) {
+        console.warn("Could not save to localStorage", e);
+      }
+    }
+
+    function renderSidebar() {
+      const nav = document.getElementById('menu-nav');
+      nav.innerHTML = '';
+
+      readingData.pages.forEach((page, index) => {
+        const isActive = index === readingData.currentPage;
+        
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left p-4 rounded-2xl flex items-center space-x-4 border-2 transition menu-card ${
+          isActive 
+            ? `${page.bgColor} ${page.borderColor} ${page.color} menu-active` 
+            : 'bg-white border-slate-100 hover:border-slate-300 text-slate-600'
+        }`;
+        
+        btn.innerHTML = `
+          <div class="w-10 h-10 rounded-xl ${isActive ? 'bg-white' : 'bg-slate-100'} flex items-center justify-center shrink-0 shadow-sm">
+            <i data-lucide="${page.icon}" class="w-5 h-5 ${isActive ? page.color : 'text-slate-500'}"></i>
+          </div>
+          <div>
+            <h3 class="font-title text-lg font-bold ${isActive ? 'text-slate-800' : 'text-slate-700'}">${page.title}</h3>
+            <p class="text-xs font-bold opacity-70">${page.subtitle}</p>
+          </div>
+        `;
+
+        btn.onclick = () => {
+          readingData.currentPage = index;
+          renderCurrentPage();
+          renderSidebar();
+        };
+
+        nav.appendChild(btn);
+      });
+
+      lucide.createIcons();
+    }
+
+    function renderCurrentPage() {
+      const page = readingData.pages[readingData.currentPage];
+      const contentEl = document.getElementById('page-content');
+      const containerEl = document.getElementById('page-container');
+
+      // Update theme border
+      containerEl.className = `flex-1 w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-t-8 ${page.borderColor} relative min-h-[600px] flex flex-col transition-colors duration-300`;
+
+      // Audio Check
+      const audioBanner = document.getElementById('user-audio-banner');
+      if (readingData.userAudioRecordings[page.id]) {
+        audioBanner.classList.remove('hidden');
+      } else {
+        audioBanner.classList.add('hidden');
+      }
+
+      let html = `
+        <div class="mb-6 pb-4 border-b-2 border-slate-100">
+          <div class="flex items-center space-x-3 mb-1">
+            <i data-lucide="${page.icon}" class="w-8 h-8 ${page.color}"></i>
+            <h2 class="font-title text-3xl font-extrabold text-slate-800">${page.title}</h2>
+          </div>
+          <p class="text-slate-500 font-bold text-lg ml-11">${page.subtitle}</p>
+        </div>
+        
+        <div class="flex-grow flex flex-col lg:flex-row gap-8">
+          <div class="flex-grow space-y-6">
+      `;
+
+      if (page.type === 'cover') {
+        // Book Cover UI
+        html += `
+            <div class="space-y-4">
+              <div>
+                <label class="block font-title font-bold text-lg text-slate-700 mb-2">Título del Libro:</label>
+                <input type="text" id="input-title" value="${page.fields.title}" placeholder="¿Cómo se llama tu libro?" class="w-full text-xl font-bold p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition bg-slate-50">
+              </div>
+              <div>
+                <label class="block font-title font-bold text-lg text-slate-700 mb-2">Autor o Autora:</label>
+                <input type="text" id="input-author" value="${page.fields.author}" placeholder="¿Quién lo escribió?" class="w-full text-xl font-bold p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition bg-slate-50">
+              </div>
+              
+              <div class="pt-4 border-t border-slate-100">
+                <label class="block font-title font-bold text-lg text-slate-700 mb-3">Dibuja o sube una imagen de la portada o tu escena favorita:</label>
+                <div class="flex items-center gap-4">
+                   <div class="w-48 h-64 border-4 border-dashed border-slate-300 rounded-2xl bg-slate-50 flex items-center justify-center overflow-hidden relative group">
+                      ${page.fields.imageUrl ? `
+                        <img src="${page.fields.imageUrl}" class="w-full h-full object-cover" />
+                        <button class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition" id="btn-remove-img" title="Eliminar imagen">
+                          <i data-lucide="trash" class="w-4 h-4"></i>
+                        </button>
+                      ` : `
+                        <div class="text-center p-4">
+                          <i data-lucide="image-plus" class="w-10 h-10 text-slate-400 mx-auto mb-2"></i>
+                          <span class="text-sm font-bold text-slate-400">Sin Imagen</span>
+                        </div>
+                      `}
+                   </div>
+                   <div class="space-y-3">
+                      <label class="flex items-center space-x-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-3 rounded-xl cursor-pointer transition">
+                        <i data-lucide="upload" class="w-5 h-5"></i>
+                        <span>Subir Imagen</span>
+                        <input type="file" accept="image/*" class="hidden" id="file-upload">
+                      </label>
+                   </div>
+                </div>
+              </div>
+            </div>
+        `;
+      } else if (page.type === 'frames') {
+        // Sentence Frames UI
+        page.frames.forEach((frame, idx) => {
+          html += `
+            <div class="bg-white border-2 border-slate-100 p-4 rounded-2xl shadow-sm focus-within:border-${page.borderColor.split('-')[1]}-400 focus-within:shadow-md transition-all">
+              <label class="block font-title font-bold text-xl text-slate-800 mb-2">${frame.prompt}</label>
+              <textarea 
+                data-frame-idx="${idx}" 
+                rows="2" 
+                placeholder="${frame.placeholder}" 
+                class="w-full text-lg font-medium p-2 outline-none resize-none bg-transparent"
+              >${frame.value}</textarea>
+            </div>
+          `;
+        });
+      }
+
+      html += `</div>`; // Close main column
+
+      // Word Bank Sidebar (only if words exist)
+      if (page.wordBank && page.wordBank.length > 0) {
+        html += `
+          <div class="w-full lg:w-64 shrink-0 no-print">
+            <div class="${page.bgColor} rounded-2xl p-5 border ${page.borderColor} shadow-inner h-full">
+              <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="puzzle" class="w-5 h-5 ${page.color}"></i>
+                <h3 class="font-title font-bold text-lg text-slate-800">Banco de Palabras</h3>
+              </div>
+              <p class="text-xs font-bold text-slate-600 mb-4">Haz clic en una palabra para agregarla a tu texto.</p>
+              <div class="flex flex-wrap gap-2">
+                ${page.wordBank.map(word => `
+                  <button class="word-chip bg-white border border-slate-200 hover:border-${page.borderColor.split('-')[1]}-500 hover:shadow-md text-slate-700 font-bold px-3 py-1.5 rounded-lg text-sm transition active:scale-95" data-word="${word}">
+                    ${word}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `</div>`; // Close flex container
+      contentEl.innerHTML = html;
+
+      setupPageEvents();
+      lucide.createIcons();
+    }
+
+    function setupPageEvents() {
+      const page = readingData.pages[readingData.currentPage];
+
+      if (page.type === 'cover') {
+        const titleInput = document.getElementById('input-title');
+        const authorInput = document.getElementById('input-author');
+        const fileUpload = document.getElementById('file-upload');
+        const removeBtn = document.getElementById('btn-remove-img');
+
+        if(titleInput) titleInput.oninput = (e) => { page.fields.title = e.target.value; saveState(); };
+        if(authorInput) authorInput.oninput = (e) => { page.fields.author = e.target.value; saveState(); };
+        
+        if (fileUpload) {
+          fileUpload.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (loadEvt) => {
+                page.fields.imageUrl = loadEvt.target.result;
+                saveState();
+                renderCurrentPage();
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+        }
+        if (removeBtn) {
+          removeBtn.onclick = () => {
+            page.fields.imageUrl = '';
+            saveState();
+            renderCurrentPage();
+          };
+        }
+      } 
+      else if (page.type === 'frames') {
+        const textareas = document.querySelectorAll('textarea[data-frame-idx]');
+        textareas.forEach(ta => {
+          ta.oninput = (e) => {
+            const idx = e.target.getAttribute('data-frame-idx');
+            page.frames[idx].value = e.target.value;
+            saveState();
+          };
+        });
+      }
+
+      // Word Bank Click Logic
+      const wordChips = document.querySelectorAll('.word-chip');
+      wordChips.forEach(chip => {
+        chip.onclick = () => {
+          const word = chip.getAttribute('data-word');
+          insertWordIntoFocusedInput(word);
+        };
+      });
+    }
+
+    function insertWordIntoFocusedInput(word) {
+      const input = readingData.lastFocusedInput;
+      if (!input || !document.body.contains(input)) {
+        displayToast('¡Haz clic dentro de un cuadro de texto primero para insertar una palabra!');
+        return;
+      }
+
+      // Insert word at cursor position
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      const before = text.substring(0, start);
+      const after = text.substring(end, text.length);
+      
+      // Add spaces smartly
+      const spaceBefore = (before.length > 0 && !before.endsWith(' ') && !before.endsWith('\n')) ? ' ' : '';
+      const spaceAfter = (after.length > 0 && !after.startsWith(' ') && !after.startsWith('\n') && !['.', ',', '!', '?', ';', ':'].includes(after[0])) ? ' ' : '';
+
+      input.value = before + spaceBefore + word + spaceAfter + after;
+      
+      // Update state manually
+      const page = readingData.pages[readingData.currentPage];
+      if (page.type === 'frames') {
+        const idx = input.getAttribute('data-frame-idx');
+        if (idx !== null) page.frames[idx].value = input.value;
+      } else if (page.type === 'cover') {
+         if (input.id === 'input-title') page.fields.title = input.value;
+         if (input.id === 'input-author') page.fields.author = input.value;
+      }
+      saveState();
+
+      // Reset cursor position
+      input.focus();
+      const newCursorPos = start + spaceBefore.length + word.length + spaceAfter.length;
+      input.setSelectionRange(newCursorPos, newCursorPos);
+      
+      displayToast(`Palabra agregada: "${word}"`);
+    }
+
+    function speakPage() {
+      if (!('speechSynthesis' in window)) {
+        displayToast('Tu navegador no es compatible con la lectura en voz alta.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+
+      const page = readingData.pages[readingData.currentPage];
+      let textToRead = `${page.title}. ${page.subtitle}. `;
+
+      if (page.type === 'cover') {
+        textToRead += `Título del libro: ${page.fields.title || 'En blanco'}. `;
+        textToRead += `Autor o autora: ${page.fields.author || 'En blanco'}. `;
+      } else if (page.type === 'frames') {
+        page.frames.forEach(f => {
+          textToRead += `${f.prompt} ${f.value || 'En blanco.'} `;
+        });
+      }
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'es-ES'; // Spanish voice
+      utterance.rate = 0.88; // Slightly slower for better comprehension
+
+      const readBtn = document.getElementById('btn-read-aloud');
+      readBtn.classList.add('bg-sky-300', 'animate-pulse');
+
+      utterance.onend = () => readBtn.classList.remove('bg-sky-300', 'animate-pulse');
+      utterance.onerror = () => readBtn.classList.remove('bg-sky-300', 'animate-pulse');
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    async function toggleVoiceRecording() {
+      const recordBtn = document.getElementById('btn-record');
+      const micIcon = document.getElementById('mic-icon');
+      const recordLabel = document.getElementById('record-label');
+      const pageId = readingData.pages[readingData.currentPage].id;
+
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            readingData.userAudioRecordings[pageId] = audioUrl;
+            
+            stream.getTracks().forEach(track => track.stop());
+            renderCurrentPage();
+            displayToast('¡Grabación de voz guardada!');
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+
+          recordBtn.classList.replace('bg-emerald-100', 'bg-red-100');
+          recordBtn.classList.replace('text-emerald-700', 'text-red-700');
+          recordBtn.classList.replace('border-emerald-200', 'border-red-300');
+          recordBtn.classList.add('animate-pulse');
+          recordLabel.textContent = 'Detener Grabación';
+          micIcon.setAttribute('data-lucide', 'square');
+          lucide.createIcons();
+
+        } catch (err) {
+          console.error(err);
+          displayToast('Se necesita permiso para acceder al micrófono.');
+        }
+      } else {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        isRecording = false;
+        
+        recordBtn.classList.remove('animate-pulse');
+        recordBtn.classList.replace('bg-red-100', 'bg-emerald-100');
+        recordBtn.classList.replace('text-red-700', 'text-emerald-700');
+        recordBtn.classList.replace('border-red-300', 'border-emerald-200');
+        recordLabel.textContent = 'Grabar Mi Voz';
+        micIcon.setAttribute('data-lucide', 'mic');
+        lucide.createIcons();
+      }
+    }
+
+    function playAudio() {
+      const pageId = readingData.pages[readingData.currentPage].id;
+      const url = readingData.userAudioRecordings[pageId];
+      if (url) {
+        const audio = new Audio(url);
+        audio.play();
+      }
+    }
+
+    function deleteAudio() {
+      const pageId = readingData.pages[readingData.currentPage].id;
+      delete readingData.userAudioRecordings[pageId];
+      renderCurrentPage();
+      displayToast('Grabación eliminada.');
+    }
+
+    function prepareAndPrint() {
+      const printContainer = document.getElementById('print-container');
+      printContainer.innerHTML = '';
+      printContainer.className = 'print:block hidden';
+
+      const coverPage = readingData.pages.find(p => p.type === 'cover');
+      const bookTitle = coverPage.fields.title || '_____________';
+      const bookAuthor = coverPage.fields.author || '_____________';
+
+      readingData.pages.forEach((page, idx) => {
+        if (page.type === 'cover') return; // Skip cover, put metadata on every page
+
+        const pageEl = document.createElement('div');
+        pageEl.className = 'print-page p-8 mb-8 bg-white';
+        
+        let framesHtml = page.frames.map(f => `
+          <div class="mb-6 break-inside-avoid">
+            <h3 class="font-bold text-xl mb-2 font-title text-slate-800">${f.prompt}</h3>
+            <div class="p-4 border-2 border-slate-300 rounded-xl min-h-[80px] text-lg font-medium whitespace-pre-wrap">${f.value || ''}</div>
+          </div>
+        `).join('');
+
+        pageEl.innerHTML = `
+          <div class="border-b-4 border-slate-800 pb-4 mb-8 flex justify-between items-end">
+            <div>
+              <h1 class="text-4xl font-extrabold font-title mb-2">${page.title}</h1>
+              <p class="text-xl font-bold text-slate-600">Libro: ${bookTitle} por ${bookAuthor}</p>
+            </div>
+            <div class="text-right text-lg font-bold">
+              Nombre: ______________________
+            </div>
+          </div>
+          
+          <div class="max-w-4xl mx-auto">
+            ${framesHtml}
+          </div>
+          
+          <div class="mt-12 text-center text-sm font-bold text-slate-400">
+            Diario de Respuesta a la Lectura • Opción: ${page.title}
+          </div>
+        `;
+        printContainer.appendChild(pageEl);
+      });
+
+      window.print();
+    }
+
+    function displayToast(msg) {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl z-50 transition-all duration-300 translate-y-20 opacity-0';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-read-aloud').onclick = speakPage;
+      document.getElementById('btn-record').onclick = toggleVoiceRecording;
+      document.getElementById('btn-print').onclick = prepareAndPrint;
+
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('#btn-play-my-audio')) playAudio();
+        if (e.target.closest('#btn-delete-audio')) deleteAudio();
+      });
+
+      renderSidebar();
+      renderCurrentPage();
+    });
+  </script>
+</body>
+</html>
